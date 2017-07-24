@@ -1,0 +1,218 @@
+
+{% extends 'public/base.html' %}
+{% block title %}
+    <title>J.A.P-IdcInfo</title>
+{% endblock %}
+{% block css %}
+        <style>
+            .modal form input{
+                color: #797979;
+            }
+            .modal form select{
+                color: #797979;
+            }
+            .query {
+                color: #797979;
+            }
+            .pagination li.active a{
+                background-color: #39b2a9 !important;
+            }
+            li a{
+                color: #797979;
+            }
+        </style>
+{% endblock %}
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <section class="panel">
+                <header class="panel-heading" >
+                    <span >QueryResult:&nbsp<em class="text-danger">{{ page_obj.paginator.count }}&nbsp</em>entries</span>
+{#                    <a href= "#addidcmodal" data-toggle="modal" type="button " class="btn btn-danger btn-round btn-primary col-lg-offset-9" >Add&nbspIdc</a>#}
+                </header>
+                <header class="panel-heading" style="display: block;position: relative" >
+                    <form  class="form-horizontal tasi-form" action={% url 'serverinfo' %} method="get">
+                        <div class="form-group ">
+                            <div class="col-lg-2">
+                                <input type="text" class="query form-control round-input" name="hostname__contains" value="{{ hostname__contains }}" placeholder="Enter Hostname">
+                            </div>
+                            <div class="col-lg-2">
+                                <input type="text" class="query form-control round-input" name="inner_ip__contains" value="{{ inner_ip__contains }}" placeholder="Enter Ip">
+                            </div>
+{#                            <div class="col-lg-2">#}
+{#                                <input type="text" class="query form-control round-input" name="status__name__contains" value="{{ status__name__contains }}" placeholder="Enter Status">#}
+{#                            </div>#}
+
+                            <button type="submit" class=" btn btn-round btn-primary query_user_message" style="position: absolute;right: 90px" >Query Criteria</button>
+                        </div>
+                    </form>
+                </header>
+                <div class="panel-body">
+                    <table class="table table-striped table-advance table-hover">
+                        <thead>
+                        <tr>
+                            <th><i class="icon-home"></i>&nbspIdc</th>
+                            <th><i class="icon-home"></i>&nbspProduct</th>
+                            <th><i class="icon-home"></i>&nbspHostname</th>
+                            <th><i class="icon-book"></i>&nbspIp</th>
+                            <th><i class="icon-book"></i>&nbspStatus</th>
+                            <th><i class="icon-cogs"></i>&nbspCpu</th>
+                            <th><i class="icon-user"></i>&nbspMemory</th>
+                            <th><i class="icon-mobile-phone"></i>&nbspDisk</th>
+                            <th><i class="icon-cogs"></i>&nbspOperation</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for server in page_obj.object_list %}
+                            <tr>
+                                <td class="idcname">{{ server.idc.name }}</td>
+                                <td class="pname">{{ server.product.name }}</td>
+                                <td class="hostname">{{ server.hostname }}</td>
+                                <td class="inner_ip">{{ server.inner_ip }}</td>
+                                <td class="status">{{ server.get_status_display}}</td>
+                                <td class="cpu">{{ server.server_cpu }}</td>
+                                <td class="mem">{{ server.server_mem }}</td>
+                                <td class="disk">{{ server.server_disk }}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-xs modify_server_message" data="{{ server.id }}">
+                                        <i class="icon-pencil"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-default" style="margin-top: -30px">
+                    <center>
+                        <ul class="pagination">
+                            <li><a href="{% url 'serverinfo' %}?page=1&{{ uri }}">Home</a></li>
+                            {#                    上一页是否存在#}
+                            {% if page_obj.has_previous %}
+                                {#                        返回上一页的页码#}
+                                <li><a href="{% url 'serverinfo' %}?page={{ page_obj.previous_page_number }}&{{ uri }}">Prev</a></li>
+                            {% else %}
+                                <li class="disabled"><a href="#&{{ uri }}">Prev</a></li>
+                            {% endif %}
+
+                            {#  {% for p in page_obj.paginator.page_range %} #}
+                            {#                    所有页码的范围[1,2,3,4,5]#}
+                            {% for p in page_range %}
+                                {#                        当前页序号#}
+                                <li {% if page_obj.number == p %}  class="active" {% endif %}><a class=""  href="{% url 'serverinfo' %}?page={{ p }}&{{ uri }}">{{ p }}</a></li>
+                            {% endfor %}
+                            {#                    判断是否有下一页#}
+                            {% if page_obj.has_next %}
+                                {#                        获取下一页的页数#}
+                                <li><a href="{% url 'serverinfo' %}?page={{ page_obj.next_page_number }}&{{ uri }}">Next</a></li>
+                            {% else %}
+                                <li class="disabled"><a href="# & {{ uri }}">Next</a></li>
+                            {% endif %}
+                            {#                    页面总数，正好充当末页#}
+                            <li><a href="{% url 'serverinfo' %}?page={{ page_obj.paginator.num_pages }}&{{ uri }}">End</a></li>
+                        </ul>
+                    </center>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="modifyservermodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h4 class="modal-title">Modify Status</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form">
+                        <form class="cmxform form-horizontal tasi-form" id="mform">
+                            <input type="hidden" name="server_id" id="m_server_id">
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-2">HostName</label>
+                                <div class="col-lg-10">
+                                    <input id="m_hostname" class="form-control" name="hostname" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-2">Ip</label>
+                                <div class="col-lg-10">
+                                    <input id="m_ip" class="form-control" name="ip" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-lg-2" for="inputSuccess">Status</label>
+                                <div class="col-lg-10">
+                                    <select  class="form-control m-bot15" id="m_status" name="status_id">
+{#                                        <option  value="0">Select Group</option>#}
+                                        {% for s in status %}
+                                        <option  value={{ s.0 }}>{{ s.1 }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-lg-2" for="inputSuccess">Product</label>
+                                <div class="col-lg-10">
+                                    <select  class="form-control m-bot15" id="m_product" name="product_id">
+{#                                        <option  value="0">Select Group</option>#}
+                                        {% for p in product %}
+                                        <option  value={{ p.id }}>{{ p.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-lg-2" for="inputSuccess">Idc</label>
+                                <div class="col-lg-10">
+                                    <select  class="form-control m-bot15" id="m_idc" name="idc_id">
+{#                                        <option  value="0">Select Group</option>#}
+                                        {% for i in idc %}
+                                        <option  value={{ i.id }}>{{ i.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button class="btn btn-danger" type="button" id="modify_server_submit">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+    $('.modify_server_message').click(function () {
+        var click_obj=$(this);
+        var serverid=click_obj.attr('data');
+        var hostname=click_obj.parents('td').siblings('.hostname').text();
+        var ip=click_obj.parents('td').siblings('.inner_ip').text();
+        $('#m_hostname').attr('placeholder',hostname).attr('disabled',true);
+        $('#m_ip').attr('placeholder',ip).attr('disabled',true);
+        $('#m_server_id').val(serverid);
+        $('#modifyservermodal').modal('show');
+        $('#modify_server_submit').click(function () {
+            var str=$('#mform').serialize();
+            console.log(str);
+            $('#modifyservermodal').modal('hide');
+            $.ajax({
+                url:"{% url 'serveroption' %}",
+                type:'PUT',
+                data:str,
+                datatype:'json',
+                success:function (ret) {
+                    if(ret.status==0){
+                        confirm(status=0,title='Modify Success',content='Modify Success');
+                    }else {
+                        $('#modifyservermodal').modal('hide');
+                        confirm(status=1,title='Modify Failed',content=ret.errmsg);
+                    }
+                }
+            })
+        })
+    });
+{% endblock %}

@@ -1,0 +1,122 @@
+{% extends 'public/base.html' %}
+{% block title %}
+    <title>J.A.P-AddWorkorder</title>
+{% endblock %}
+{% block css %}
+        <style>
+            #addworkorder input{
+                color: #797979;
+            }
+            #addworkorder select{
+                color: #797979;
+            }
+
+{#            .pagination li.active a{#}
+{#                background-color: #39b2a9 !important;#}
+{#            }#}
+{#            li a{#}
+{#                color: #797979;#}
+{#            }#}
+{#            .jconfirm .jconfirm-box.jconfirm-type-green{#}
+{#                border-top: solid 7px #A9D86E;#}
+{#            }#}
+        </style>
+{% endblock %}
+{% block content %}
+    <div class="row">
+        <div class="col-lg-12">
+            <section class="panel">
+                <header class="panel-heading">
+                    Add Workorder
+                </header>
+                <div class="panel-body">
+                    <form class="form-horizontal tasi-form" id="addworkorder">
+                        <input type="hidden" name="applicant" value={{ request.user.id }}>
+{#                        <input type="hidden" name="applicant" value={{ request.user.id }}>#}
+                        <div class="form-group has-error">
+                            <label class="col-lg-2 control-label">Title</label>
+                            <div class="col-lg-10">
+                                <input type="text" id="title" name="title" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group has-error">
+                            <label class="col-lg-2 control-label">Product</label>
+                            <div class="col-lg-10">
+                                <select  class="form-control m-bot15" id="product" name="product">
+                                    <option  value=0>Select Product</option>
+                                    {% for product in products %}
+                                        <option  value="{{ product.id }}">{{ product.name }}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group has-error">
+                            <label class="col-lg-2 control-label">Service</label>
+                            <div class="col-lg-10">
+                                <select  class="form-control m-bot15" id="service_name" name="service_name">
+                                    <option  value=0>Select Service</option>
+                                    {% for service in services %}
+                                        <option  value="{{ service.0 }}">{{ service.1 }}
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group has-error">
+                            <label class="col-lg-2 control-label">operation Time</label>
+                            <div class="col-lg-10">
+                                <input type="datetime" id="operation_time" name="operation_time" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-group has-error">
+                            <label class="col-lg-2 control-label">operation Reason</label>
+                            <div class="col-lg-10">
+                                <textarea class="form-control " id="update_reason" name="update_reason" required="" style=" height: 115px; width: 862px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group has-error">
+                            <label class="col-lg-2 control-label">operation contents</label>
+                            <div class="col-lg-10">
+                                <textarea class="form-control " id="order_contents" name="order_contents" required="" style=" height: 115px; width: 862px;"></textarea>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-lg-offset-2 col-lg-10">
+                                <button id="workorder_submit" class="btn btn-danger" type="button">Submit</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+{#    <script>#}
+    $('#workorder_submit').click(function () {
+        var str=$('#addworkorder').serialize();
+        console.log(str)
+        $.post(
+            '{% url 'addworkorder' %}',
+            str,
+            function (ret) {
+                if(ret.status==0) {
+                    confirm(status=0,title='Success',content='Success');
+                }
+                else if(ret.status==1){
+                    confirm(status=1,title='Faild',content=ret.errmsg);
+                }else {
+                    $('.errmsg').remove();
+                    $.each(JSON.parse(ret.errmsg),function (k,v) {
+                        var tag =document.createElement('span');
+                        tag.className='errmsg';
+                        tag.style='display:block;color:red;margin-top:10px';
+                        tag.innerText=v[0].message;
+                        $('#'+k).after(tag)
+                    });
+                }
+
+            }
+        )
+    });
+
+{% endblock %}

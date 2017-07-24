@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="">
+        <meta name="author" content="Mosaddek">
+        <meta name="keyword" content="FlatLab, Dashboard, Bootstrap, Admin, Template, Theme, Responsive, Fluid, Retina">
+        <link rel="shortcut icon" href="/static/img/favicon.html">
+
+        <title>J.A.P-LOGIN</title>
+
+        <!-- Bootstrap core CSS -->
+        <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+        <link href="/static/css/bootstrap-reset.css" rel="stylesheet">
+        <!--external css-->
+        <link href="/static/assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
+        <!-- Custom styles for this template -->
+        <link href="/static/css/style.css" rel="stylesheet">
+        <link href="/static/css/style-responsive.css" rel="stylesheet" />
+        <link href="/static/css/jquery-confirm.min.css" rel="stylesheet" />
+
+
+    </head>
+    <body class="login-body">
+        <div class="container">
+            <div class="form-signin">
+                <h2 class="form-signin-heading">JioChat Automatic Platform</h2>
+                <div class="login-wrap">
+                    <input type="text" class="form-control" placeholder="Username" autofocus name="username" id="username">
+                    <input type="password" class="form-control" placeholder="Password" name="password" id="password">
+                    <button class="btn btn-lg btn-login btn-block" id="from_submit">login</button>
+{#                    <button class="btn btn-lg btn-success btn-block" id="user_registration">User Registration</button>#}
+                </div>
+            </div>
+        </div>
+{#        <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="registration_modal" class="modal fade">#}
+{#        <div class="modal-dialog">#}
+{#            <div class="modal-content">#}
+{#                <div class="modal-header">#}
+{#                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>#}
+{#                    <h4 class="modal-title">User Registration</h4>#}
+{#                </div>#}
+{#                <div class="panel-body">#}
+{#                    <div class="form">#}
+{#                        <form class="cmxform form-horizontal tasi-form" id="r_form">#}
+{#                            <div class="form-group ">#}
+{#                                <label  class="control-label col-lg-2">Username</label>#}
+{#                                <div class="col-lg-10">#}
+{#                                    <input class="form-control help-block" id="r_username" name="r_username" type="text"/>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="form-group ">#}
+{#                                <label class="control-label col-lg-2">Password</label>#}
+{#                                <div class="col-lg-10">#}
+{#                                    <input class="form-control help-block" id="r_password" name="r_password" type="text"/>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="form-group ">#}
+{#                                <label for="email" class="control-label col-lg-2">Email</label>#}
+{#                                <div class="col-lg-10">#}
+{#                                    <input class="form-control " id="r_email" name="r_email" type="email" />#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="form-group ">#}
+{#                                <label  class="control-label col-lg-2">Phone number</label>#}
+{#                                <div class="col-lg-10">#}
+{#                                    <input class="form-control help-block" id="r_phone" name="r_phone" type="text"/>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="form-group">#}
+{#                                <label class="control-label col-lg-2" for="inputSuccess">Department</label>#}
+{#                                <div class="col-lg-10">#}
+{#                                    <select id="r_department" class="form-control m-bot15" name="r_department">#}
+{#                                        {% for d in department %}#}
+{#                                        <option value="{{ d.0 }}">{{ d.1 }}#}
+{#                                        {% endfor %}#}
+{#                                    </select>#}
+{#                                </div>#}
+{#                            </div>#}
+{##}
+{#                            <div class="form-group">#}
+{#                                <label class="control-label col-lg-2" for="inputSuccess">Title</label>#}
+{#                                <div class="col-lg-10">#}
+{#                                    <select id="r_title" class="form-control m-bot15" name="r_title">#}
+{#                                        {% for t in title %}#}
+{#                                        <option value="{{ t.0 }}">{{ t.1 }}</option>#}
+{#                                        {% endfor %}#}
+{#                                    </select>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                            <div class="form-group">#}
+{#                                <div class="col-lg-offset-2 col-lg-10">#}
+{#                                    <button class="btn btn-danger" type="button" id="r_user_submit">Submit</button>#}
+{#                                </div>#}
+{#                            </div>#}
+{#                        </form>#}
+{#                    </div>#}
+{#                </div>#}
+{##}
+{#            </div>#}
+{#        </div>#}
+{#    </div>#}
+
+    </body>
+
+<script src="/static/js/jquery-1.8.3.min.js"></script>
+<script src="/static/js/jquery-confirm.min.js"></script>
+<script src="/static/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+{#        $('#user_registration').click(function () {#}
+{#            $('.errmsg').remove();#}
+{#            $('#registration_modal').modal('show');#}
+{#            $('#r_user_submit').click(function () {#}
+{##}
+{#                var str=$('#r_form').serialize();#}
+{#                console.log(str)#}
+{#                $.post(#}
+{#                    '{% url 'useroption' %}',#}
+{#                    str,#}
+{#                    function (ret) {#}
+{#                        console.log(ret);#}
+{#                        if(ret.status==0){#}
+{#                            $('#registration_modal').modal('hide');#}
+{#                            $.confirm({#}
+{#                                title: 'Registration Success',#}
+{#                                content: 'Success,please contact the administrator for you activate',#}
+{#                                type: 'green',#}
+{#                                typeAnimated: true,#}
+{#                                buttons: {#}
+{#                                    tryAgain: {#}
+{#                                        text: 'I know',#}
+{#                                        btnClass: 'btn-success',#}
+{#                                        action: function(){#}
+{#                                            location.reload()#}
+{#                                        }#}
+{#                                    }#}
+{#                                }#}
+{#                            });#}
+{#                        }else if (ret.status==2){#}
+{#                            $('.errmsg').remove();#}
+{#                            $.each(JSON.parse(ret.errmsg),function (k,v) {#}
+{#                                var tag =document.createElement('span');#}
+{#                                tag.className='errmsg';#}
+{#                                tag.style='display:block;color:red;margin-top:10px';#}
+{#                                tag.innerText=v[0].message;#}
+{#                                $('#'+k).after(tag)#}
+{#                            });#}
+{#                        }#}
+{#                        else {#}
+{#                            $.confirm({#}
+{#                                title: 'Registration Failed',#}
+{#                                content: ret.errmsg,#}
+{#                                type: 'red',#}
+{#                                typeAnimated: true,#}
+{#                                buttons: {#}
+{#                                    tryAgain: {#}
+{#                                        text: 'I know',#}
+{#                                        btnClass: 'btn-red',#}
+{#                                        action: function(){#}
+{#                                        }#}
+{#                                    }#}
+{#                                }#}
+{#                            });#}
+{#                        }#}
+{#                    }#}
+{#                )#}
+{#            })#}
+{#        });#}
+        $('#from_submit').click(function () {
+            $('.errmsg').remove();
+            var username=$('#username').val().trim();
+            var password=$('#password').val().trim();
+            $.post('#',
+                {'username':username,'password':password},
+                function (ret) {
+                    var tag=document.createElement('span');
+                    tag.className='errmsg';
+                    tag.style='display:block;color: red;margin-bottom: 10px;text-align: center;';
+                    if (ret.status==0){
+                        console.log(ret);
+                        location.href=ret.next_url;
+                    }
+                    else if (ret.status==1){
+                        tag.innerText=ret.errmsg;
+                    }
+                    else if (ret.status==2){
+                        tag.innerText=ret.errmsg;
+                    }else {
+                        tag.innerText=ret.errmsg;
+                    }
+                    $('input[name="password"]').after(tag);
+            });
+        });
+    });
+</script>
+</html>

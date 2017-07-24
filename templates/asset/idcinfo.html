@@ -1,0 +1,293 @@
+
+{% extends 'public/base.html' %}
+{% block title %}
+    <title>J.A.P-IdcInfo</title>
+{% endblock %}
+{% block css %}
+        <style>
+            .modal form input {
+                color: #797979;
+            }
+            .pagination li.active a{
+                background-color: #39b2a9 !important;
+            }
+            li a{
+                color: #797979;
+            }
+        </style>
+{% endblock %}
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <section class="panel">
+                <header class="panel-heading" >
+                    <span >QueryResult:&nbsp<em class="text-danger">{{ page_obj.paginator.count }}&nbsp</em>entries</span>
+                    <a href= "#addidcmodal" data-toggle="modal" type="button " class="btn btn-danger btn-round btn-primary col-lg-offset-9" >Add&nbspIdc</a>
+                </header>
+                <div class="panel-body">
+                    <table class="table table-striped table-advance table-hover">
+                        <thead>
+                        <tr>
+                            <th><i class="icon-home"></i>&nbspIdc&nbspName</th>
+                            <th><i class="icon-book"></i>&nbspShort&nbspName</th>
+                            <th><i class="icon-cogs"></i>&nbspAddress</th>
+                            <th><i class="icon-user"></i>&nbspContact&nbspUser</th>
+                            <th><i class="icon-mobile-phone"></i>&nbspPhone</th>
+                            <th><i class="icon-envelope"></i>&nbspEmail</th>
+                            <th><i class="icon-envelope"></i>&nbspupdate Time</th>
+                            <th><i class="icon-cogs"></i>&nbspOperation</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for idc in page_obj.object_list %}
+                            <tr>
+                                <td class="idcname">{{ idc.name }}</td>
+                                <td class="idcshortname">{{ idc.short_name }}</td>
+                                <td class="idcaddress">{{ idc.address }}</td>
+                                <td class="idccontactuser">{{ idc.contact_user }}</td>
+                                <td class="idcuserphone">{{ idc.user_phone }}</td>
+                                <td class="idcuseremail">{{ idc.user_email }}</td>
+                                <td class="idcuseremail">{{ idc.update_time }}</td>
+                                <td>
+                                    <button class="btn btn-primary btn-xs modify_idc_message" data="{{ idc.id }}">
+                                        <i class="icon-pencil"></i>
+                                    </button>
+                                    <button  class="btn btn-danger btn-xs delete_idc_message" data="{{ idc.id }}">
+                                        <i class="icon-trash "></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="addidcmodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h4 class="modal-title">Add Idc</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form">
+                        <form class="cmxform form-horizontal tasi-form" id="aform">
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-3">Idc Name</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control help-block" id="name" name="name" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-3">Short Name</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control help-block" id="short_name" name="short_name" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-3">Idc Address</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control help-block" id="address" name="address" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-3">Contact User</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control help-block" id="contact_user" name="contact_user" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-3">Phone</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control help-block" id="user_phone" name="user_phone" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-3">Email</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control help-block" id="user_email" name="user_email" type="text"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button class="btn btn-danger" type="button" id="add_idc_submit">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="modifyidcmodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h4 class="modal-title">Modify Idc</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form">
+                        <form class="cmxform form-horizontal tasi-form" id="mform">
+                            <input type="hidden" name="id" id="m_idc_id">
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-3">Contact User</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control help-block" id="m_contact_user" name="contact_user" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-3">Phone</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control help-block" id="m_user_phone" name="user_phone" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-3">Email</label>
+                                <div class="col-lg-8">
+                                    <input class="form-control help-block" id="m_user_email" name="user_email" type="text"/>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button class="btn btn-danger" type="button" id="modify_idc_submit">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="delmodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h4 class="modal-title">Delete idc</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form">
+                        <form class="cmxform form-horizontal tasi-form" id="d_form">
+                            <input type="hidden" name="id" id="idc_id">
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-2">Idc Name</label>
+                                <div class="col-lg-10">
+                                    <input id="d_name" class="form-control" name="name" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button class="btn btn-danger" type="button" id="delete_idc_submit">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+{#    <script>#}
+    $('.modify_idc_message').click(function () {
+        var idcid=$(this).attr('data');
+        str={'id':idcid};
+        console.log(str)
+       $.get(
+           '{% url 'idcoption' %}',
+           str,
+           function (ret) {
+               if (ret.status==0){
+                   console.log(ret);
+                   $('#m_idc_id').attr('value',idcid);
+                   $('#m_contact_user').attr('value',ret.contact_user);
+                   $('#m_user_phone').attr('value',ret.user_phone);
+                   $('#m_user_email').attr('value',ret.user_email);
+                   $('#modifyidcmodal').modal('show');
+
+               }
+           }
+       );
+        $('#modify_idc_submit').click(function () {
+            var str=$('#mform').serialize();
+            $.ajax({
+                url:"{% url 'idcoption' %}",
+                type:'PUT',
+                data:str,
+                datatype:'json',
+                success:function (ret) {
+                    if(ret.status==0){
+                        $('#modifyidcmodal').modal('hide');
+                        confirm(status=0,title='Modify Success',content='Modify Success');
+                    }else {
+                        confirm(status=1,title='Modify Failed',content=ret.errmsg);
+                    }
+                }
+
+            })
+        })
+    });
+    $('.delete_idc_message').click(function () {
+        var click_obj=$(this);
+        var idcname=click_obj.parents('td').siblings('.idcname').text();
+        var idcid=click_obj.attr('data');
+        $('#delmodal').modal('show');
+        $('#d_name').attr('placeholder',idcname).attr('disabled',true);
+        $('#idc_id').val(idcid);
+        $('#delete_idc_submit').click(function () {
+            var str=$('#d_form').serialize();
+            console.log(str);
+            $.ajax({
+                url:'{% url 'idcoption' %}',
+                type:'DELETE',
+                data:str,
+                datatype:'json',
+                success:function (ret) {
+                    if (ret.status===0){
+                        $('#delmodal').modal('hide');
+                        confirm(status=0,title='Delete Success',content='Delete idc: '+ idcname);
+                    }
+                    else {
+                        confirm(status=1,title='Delete Failed',content=ret.errmsg);
+                    }
+                }
+            });
+        })
+    });
+    $('#add_idc_submit').click(function () {
+        var c_url=location.href;
+        var str = $('#aform').serialize();
+        console.log(str);
+        $.post('{% url 'idcoption' %}',
+            str,
+            function (ret) {
+                console.log(ret);
+                if(ret.status==0) {
+                    $('#addidcmodal').modal('hide');
+                    confirm(status=0,title='Success',content='New Idc info add success.');
+
+                }
+                else if(ret.status==1){
+                    confirm(status=1,title='Add Failed',content=ret.errmsg);
+
+                }else {
+                    $('.errmsg').remove();
+                    $.each(JSON.parse(ret.errmsg),function (k,v) {
+                        var tag =document.createElement('span');
+                        tag.className='errmsg';
+                        tag.style='display:block;color:red;margin-top:10px';
+                        tag.innerText=v[0].message;
+                        $('#'+k).after(tag)
+                    });
+                }
+            }
+        )
+    });
+{#    </script>#}
+{% endblock %}

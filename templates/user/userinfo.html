@@ -1,0 +1,536 @@
+{% extends 'public/base.html' %}
+
+{% block title %}
+    <title>J.A.P-UserInfo</title>
+{% endblock %}
+{% block css %}
+        <style>
+            .modal form input{
+                color: #797979;
+            }
+            .modal form select{
+                color: #797979;
+            }
+            .query {
+                color: #797979;
+            }
+            .pagination li.active a{
+                background-color: #39b2a9 !important;
+            }
+            li a{
+                color: #797979;
+            }
+{#            .jconfirm .jconfirm-box.jconfirm-type-green{#}
+{#                border-top: solid 7px #A9D86E;#}
+{#            }#}
+        </style>
+{% endblock %}
+{% block content %}
+
+    <div class="row">
+        <div class="col-lg-12">
+            <section class="panel">
+                <header class="panel-heading" style="position: relative;height: 55px;line-height: 38px" >
+                    <span >QueryResult:&nbsp<em class="text-danger">{{ page_obj.paginator.count }}&nbsp</em>entries</span>
+                    <button id="add_user_button" class="btn btn-round btn-danger" style="position: absolute;right: 90px;top: 11px" >Add User</button>
+                </header>
+                <header class="panel-heading" style="display: block;position: relative" >
+                    <form  class="form-horizontal tasi-form" action={% url 'userinfo' %} method="get">
+                        <div class="form-group ">
+                            <div class="col-lg-3">
+                                <input type="text" class="query form-control round-input" name="search_keywords" value="{{ search_keywords }}"  placeholder="Search username|email|phone">
+                            </div>
+{#                            <div class="col-lg-2">#}
+{#                                <input type="email" class="query form-control round-input" name="email" value="{{ email }}" placeholder="Enter Email">#}
+{#                            </div>#}
+{#                            <div class="col-lg-2">#}
+{#                                <input type="text" class="query form-control round-input" name="phone"  value="{{ phone }}" placeholder="Enter Phone">#}
+{#                            </div>#}
+
+                            <button type="submit" class=" btn btn-round btn-primary query_user_message" style="position: absolute;right: 90px" >Query Criteria</button>
+                        </div>
+                    </form>
+                </header>
+
+                <div class="panel-body">
+                    <table class="table table-striped table-advance table-hover">
+                        <thead>
+                        <tr>
+                            <th><i class="icon-user"></i><em> </em>User name</th>
+{#                            <th><i class="icon-male"></i><em> </em>Cname</th>#}
+                            <th class="hidden-phone"><i class="icon-envelope"></i><em> </em>Email</th>
+                            <th class="hidden-phone"><i class="icon-mobile-phone"></i><em> </em>Phone</th>
+                            <th class="hidden-phone"><i class="icon-home"></i><em> </em>Department</th>
+                            <th class="hidden-phone"><i class=" icon-vk"></i><em> </em>Title</th>
+                            <th class="hidden-phone"><i class=" icon-group"></i><em> </em>Group</th>
+                            <th><i class="icon-key"></i><em> </em>Status</th>
+                            <th><i class="icon-cogs"></i><em> </em>Operation</th>
+                            <th></th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {#                        当前页面所有数据的对象列表，page_obj.object_list#}
+                        {% for user in page_obj.object_list %}
+                            <tr>
+                            {% if not user.is_superuser %}
+                                <td class="username">{{ user.username}}</td>
+{#                                <td class="cname">{{ user.profile.cname}}</td>#}
+                                <td class="email">{{ user.email }}</td>
+                                <td class="phone">{{ user.phone }}</td>
+                                <td class="dname">{{ user.get_department_display }}</td>
+                                <td class="title">{{ user.get_title_display }}</td>
+                                <td class="group">{% for g in user.groups.all %}{{ g.name }}{% endfor %}</td>
+                                {% if user.is_active %}
+                                    <td class="status"><span class="label label-success label-mini" >Enable</span></td>
+                                {% else %}
+                                    <td class="status"><span class="label label-danger label-mini" >Disable</span></td>
+                                {% endif %}
+                                <td>
+                                    {% if user.is_active %}
+                                        <button class="btn btn-danger btn-xs modify_user_status" status="True" data="{{ user.id }}"><i class="icon-ban-circle "></i></button>
+                                    {% else %}
+                                        <button class="btn btn-success btn-xs modify_user_status" status="False" data="{{ user.id }}"><i class="icon-ok"></i></button>
+                                    {% endif %}
+                                    <a href="#modifymodal" data-toggle="modal" class="btn btn-primary btn-xs modify_user_message" data="{{ user.id }}">
+                                        <i class="icon-pencil"></i>
+                                    </a>
+                                    <a href="#delmodal" data-toggle="modal" class="btn btn-danger btn-xs delete_user_message" data="{{ user.id }}"><i class="icon-trash "></i></a>
+                                </td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="panel-default" style="margin-top: -30px">
+                    <center>
+                        <ul class="pagination" >
+                            <li><a href="{% url 'userinfo' %}?page=1">Home</a></li>
+                            {# 如果有前一页，前一页按钮可以点击，否则不可以点击 #}
+                            {% if page_obj.has_previous %}
+                                <li class="paginate_button previous" aria-controls="editable" tabindex="0" id="editable_previous">
+                                    <a class="page" href="?{{ page_obj.previous_page_number.querystring }}">Prev</a>
+                                </li>
+                            {% else %}
+                                <li class="paginate_button previous disabled" aria-controls="editable" tabindex="0" id="editable_previous">
+                                    <a class="page" href="#">Prev</a>
+                                </li>
+                            {% endif %}
+
+                            {% for page in page_obj.pages %}
+                                {% if page %}
+                                    {% ifequal page page_obj.number %}
+                                        <li class="paginate_button active"  aria-controls="editable" tabindex="0"><a class="page" href="?{{ page.querystring }}">{{ page }}</a></li>
+                                    {% else %}
+                                        <li class="paginate_button" aria-controls="editable" tabindex="0"><a class="page" href="?{{ page.querystring }}">{{ page }}</a></li>
+                                    {% endifequal %}
+                                {% else %}
+                                    <li class="none"><a href="">...</a></li>
+                                {% endif %}
+                            {% endfor %}
+                            {% if page_obj.has_next %}
+                                <li class="paginate_button next" aria-controls="editable" tabindex="0" id="editable_next">
+                                    <a class="page" href="?{{ page_obj.next_page_number.querystring }}">Next</a>
+                                </li>
+                            {% else %}
+                                <li class="paginate_button next disabled" aria-controls="editable" tabindex="0" id="editable_next">
+                                    <a class="page" href="#">Next</a>
+                                </li>
+                            {% endif %}
+                            <li><a href="{% url 'userinfo' %}?page={{ page_obj.paginator.num_pages }}">End</a></li>
+                        </ul>
+                    </center>
+{#                    <center>#}
+{#                        <ul class="pagination">#}
+{#                            <li><a href="{% url 'userinfo' %}?page=1&{{ uri }}">Home</a></li>#}
+                            {#                    上一页是否存在#}
+{#                            {% if page_obj.has_previous %}#}
+                                {#                        返回上一页的页码#}
+{#                                <li><a href="{% url 'userinfo' %}?page={{ page_obj.previous_page_number }}&{{ uri }}">Prev</a></li>#}
+{#                            {% else %}#}
+{#                                <li class="disabled"><a href="#&{{ uri }}">Prev</a></li>#}
+{#                            {% endif %}#}
+{##}
+                            {#  {% for p in page_obj.paginator.page_range %} #}
+                            {#                    所有页码的范围[1,2,3,4,5]#}
+{#                            {% for p in page_range %}#}
+                                {#                        当前页序号#}
+{#                                <li {% if page_obj.number == p %}  class="active" {% endif %}><a class=""  href="{% url 'userinfo' %}?page={{ p }}&{{ uri }}">{{ p }}</a></li>#}
+{#                            {% endfor %}#}
+                            {#                    判断是否有下一页#}
+{#                            {% if page_obj.has_next %}#}
+                                {#                        获取下一页的页数#}
+{#                                <li><a href="{% url 'userinfo' %}?page={{ page_obj.next_page_number }}&{{ uri }}">Next</a></li>#}
+{#                            {% else %}#}
+{#                                <li class="disabled"><a href="#&{{ uri }}">Next</a></li>#}
+{#                            {% endif %}#}
+                            {#                    页面总数，正好充当末页#}
+{#                            <li><a href="{% url 'userinfo' %}?page={{ page_obj.paginator.num_pages }}&{{ uri }}">End</a></li>#}
+{#                        </ul>#}
+{#                    </center>#}
+                </div>
+            </section>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="addmodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h4 class="modal-title">Add User</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form">
+                        <form class="cmxform form-horizontal tasi-form" id="add_form">
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-2">Username</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control help-block" id="r_username" name="r_username" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label class="control-label col-lg-2">Password</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control help-block"  id="r_password" name="r_password" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="email" class="control-label col-lg-2">Email</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control " id="r_email"  name="r_email" type="email" />
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-2">Phone number</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control help-block" id="r_phone" name="r_phone" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-lg-2" for="inputSuccess">Department</label>
+                                <div class="col-lg-10">
+                                    <select  class="form-control m-bot15" id="r_department" name="r_department">
+                                        <option value=0>Select Department</option>
+                                        {% for d in department %}
+                                        <option value="{{ d.0 }}">{{ d.1 }}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-lg-2" for="inputSuccess">Title</label>
+                                <div class="col-lg-10">
+                                    <select  class="form-control m-bot15" id="r_title" name="r_title">
+                                        <option value=0>Select Title</option>
+                                        {% for t in title %}
+                                        <option value="{{ t.0 }}">{{ t.1 }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-lg-2" for="inputSuccess">Group</label>
+                                <div class="col-lg-10">
+                                    <select  class="form-control m-bot15" id="r_group" name="r_group">
+                                        <option value=0>Select Group</option>
+                                        {% for g in groups %}
+                                        <option value={{ g.id }}>{{ g.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button class="btn btn-danger" type="button" id="add_user_submit">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="modifymodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h4 class="modal-title">Modify User</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form">
+                        <form class="cmxform form-horizontal tasi-form" id="mform">
+                            <input type="hidden" name="m_userid" id="m_userid">
+                            <div class="form-group ">
+                                <label for="username" class="control-label col-lg-2">Username</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control new_active text-danger help-block" id="m_username" name="m_username" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="username" class="control-label col-lg-2">Password</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control new_active text-danger help-block" id="m_password" name="m_password" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="email" class="control-label col-lg-2">Email</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control " id="m_email" name="m_email" type="email" />
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label for="username" class="control-label col-lg-2">Phone</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control new_active text-danger help-block" id="m_phone" name="m_phone" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-lg-2" for="inputSuccess">Department</label>
+                                <div class="col-lg-10">
+                                    <select  class="form-control m-bot15" id="m_department" name="m_department">
+                                        <option  value=0>Select Department</option>
+                                        {% for d in department %}
+                                        <option  value="{{ d.0 }}">{{ d.1 }}
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="control-label col-lg-2" for="inputSuccess">Title</label>
+                                <div class="col-lg-10">
+                                    <select  class="form-control m-bot15" id="m_title" name="m_title">
+{#                                        <option  value=0>Select Title</option>#}
+                                        {% for t in title %}
+                                        <option  value="{{ t.0 }}">{{ t.1 }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label col-lg-2" for="inputSuccess">Group</label>
+                                <div class="col-lg-10">
+                                    <select  class="form-control m-bot15" id="m_group" name="m_group">
+{#                                        <option  value="0">Select Group</option>#}
+                                        {% for g in groups %}
+                                        <option  value={{ g.id }}>{{ g.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button class="btn btn-danger" type="button" id="m_submit">Submit</button>
+                                </div>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="delmodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h4 class="modal-title">Delete User</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form">
+                        <form class="cmxform form-horizontal tasi-form" id="d_form">
+                            <input type="hidden" name="userid" id="d_userid">
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-2">Username</label>
+                                <div class="col-lg-10">
+                                    <input id="d_username" class="form-control" name="username" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button class="btn btn-danger" type="button" id="d_submit">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block js %}
+{#    <script>#}
+        $(document).ready(function () {
+            $('.modify_user_status').click(function () {
+                var status=$(this).attr('status');
+                if (status==="True"){
+
+                    click_obj=$(this);
+                    modify_user_status(click_obj.attr('data'));
+                    click_obj.removeClass('btn-danger').addClass('btn-success').attr('status','False');
+                    click_obj.children().removeClass('icon-ban-circle').addClass('icon-ok');
+                    click_obj.parents('td').siblings('.status').html('<span class="label label-danger label-mini">Disable</span>');
+
+                }
+                else {
+                    click_obj=$(this);
+                    modify_user_status(click_obj.attr('data'));
+                    click_obj.removeClass('btn-success').addClass('btn-danger').attr('status','True');
+                    click_obj.children().removeClass('icon-ok').addClass('icon-ban-circle');
+                    click_obj.parents('td').siblings('.status').html('<span class="label label-success label-mini">Enable</span>');
+                }
+            });
+            $('#add_user_button').click(function(){
+                $('.errmsg').remove();
+                $('#addmodal').modal('show');
+                $('#add_user_submit').click(function () {
+                    var c_url=location.href;
+                    var str = $('#add_form').serialize();
+                    console.log(str);
+                    $.post('{% url 'useroption' %}',
+                        str,
+                        function (ret) {
+                            console.log(ret);
+                            if(ret.status==0) {
+                                $('#addmodal').modal('hide');
+                                confirm(status=0,title='Add user',content='Success');
+                            }
+                            else if (ret.status==1){
+                                confirm(status=1,title='Add user',content='Faild');
+                            }else{
+                                $('.errmsg').remove();
+                                $.each(JSON.parse(ret.errmsg),function (k,v) {
+                                    var tag =document.createElement('span');
+                                    tag.className='errmsg';
+                                    tag.style='display:block;color:red;margin-top:10px';
+                                    tag.innerText=v[0].message;
+                                    $('#'+k).after(tag)
+                                });
+                            }
+                        }
+                    )
+                });
+            });
+            $('.modify_user_message').click(function () {
+                var c_url=location.href;
+                $('.errmsg').remove();
+                var click_obj=$(this);
+                var userid=click_obj.attr('data');
+                str={'userid':userid};
+                $.get(
+                    '{% url 'useroption' %}',
+                    str,
+                    function (ret) {
+{#                        console.log(ret);#}
+                        $('#m_username').attr('value',ret.username);
+                        $('#m_email').attr('value',ret.email);
+                        $('#m_userid').attr('value',ret.id);
+                        $('#m_phone').attr('value',ret.phone);
+                        $('#m_department').val(ret.d_id);
+                        $('#m_title').val(ret.t_id);
+                        $('#m_group').val(ret.g_id);
+                        var c_url=location.href;
+                        $('#modifymodal').modal('show');
+                        $('#m_submit').click(function () {
+                            var str = $('#mform').serialize();
+                            console.log(str);
+                            $.ajax({
+                                url:"{% url 'useroption' %}",
+                                type:'PUT',
+                                data:str,
+                                datatype:'json',
+                                success:function (ret) {
+                                    if(ret.status==0) {
+                                        $('#modifymodal').modal('hide');
+                                        confirm(status=0,title='Modify Success',content='Modify Success');
+
+                                    }
+                                    else if (ret.status==1){
+                                        $('#modifymodal').modal('hide');
+                                        confirm(status=1,title='Modify Failed',content=ret.errmsg);
+
+                                    }else {
+                                        $('.errmsg').remove();
+                                        $.each(JSON.parse(ret.errmsg),function (k,v) {
+                                            var tag =document.createElement('span');
+                                            tag.className='errmsg';
+                                            tag.style='display:block;color:red;margin-top:10px';
+                                            tag.innerText=v[0].message;
+                                            $('#'+k).after(tag)
+                                        });
+                                    }
+                                }
+
+                            });
+                        })
+                    }
+                );
+            });
+            $('.delete_user_message').click(function () {
+                var c_url=location.href;
+                var click_obj=$(this);
+                var username=click_obj.parents('td').siblings('.username').text();
+                var userid=click_obj.attr('data');
+                $('#d_username').attr('placeholder',username).attr('disabled',true);
+                $('#d_userid').attr('value',userid);
+                $('#d_submit').click(function () {
+                    var userid=$('#d_userid').val();
+                    var str={'userid':userid};
+                    console.log(str)
+                    $.ajax({
+                        url:'{% url 'useroption' %}',
+                        type:'DELETE',
+                        data:str,
+                        datatype:'json',
+                        success:function (ret) {
+                            if (ret.status==0){
+{#                                click_obj.parents('tr').remove();#}
+                                $('#delmodal').modal('hide');
+                                confirm(status=0,title='Delete Success',content='Delete user: '+ username);
+                            }
+                            else {
+                                confirm(status=1,title='Delete Failed',content=ret.errmsg);
+                            }
+                        }
+                    });
+                })
+            });
+        });
+
+        function modify_user_status(id) {
+            $.post(
+                '{% url 'modifystatus' %}',
+                {'user_id':id},
+                function (ret) {
+                    console.log(ret);
+                    if(ret.status != 0){
+                        $.confirm({
+                            title: ' Failed',
+                            content: ret.errmsg,
+                            type: 'red',
+                            typeAnimated: true,
+                            buttons: {
+                                tryAgain: {
+                                    text: 'I know',
+                                    btnClass: 'btn-red',
+                                    action: function(){
+                                        location.reload();
+                                    }
+                                }
+                            }
+                        });
+                    }
+                }
+            )
+        }
+{#    </script>#}
+{% endblock %}
