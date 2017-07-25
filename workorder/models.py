@@ -2,15 +2,11 @@
 from django.db import models
 from asset.models import Product
 from user.models import UserProfile
+from service.models import Service
 # Create your models here.
 
 class Workorder(models.Model):
-    SERVICE_CHOICE =(
-        (1,'CMP'),
-        (2,'UCC'),
-        (3,'MSC'),
-        (4,'CGC'),
-    )
+
     STATUS_CHOICE=(
         (1,'Approved'),
         (2,'Reject'),
@@ -36,7 +32,7 @@ class Workorder(models.Model):
     # sa_manager              =models.ForeignKey(User,related_name='sa_manager')
     # director                =models.ForeignKey(User,related_name='director')
     # dev_manager             =models.ForeignKey(User,related_name='dev_manager')
-    service_name            =models.IntegerField(choices=SERVICE_CHOICE)
+    service            =models.ForeignKey(Service)
     order_contents          =models.TextField(max_length=1000)
     dba_status              =models.CharField(max_length=20,choices=STATUS_CHOICE,default=3,null=True)
     test_manager_status     =models.IntegerField(choices=STATUS_CHOICE,default=3,null=True)
@@ -54,6 +50,6 @@ class Workorder(models.Model):
 
     class Meta:
         db_table='workorder'
-        # ordering=['complete_time']
+        ordering=['complete_time']
 
 

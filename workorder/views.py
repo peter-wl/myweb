@@ -9,6 +9,7 @@ from workorder.models import Workorder
 from forms import AddWorkorederForms,RejectForms
 from user.models import UserProfile
 from django.core import serializers
+from service.models import Service
 from django.db.models import Q
 from pure_pagination import Paginator,EmptyPage,PageNotAnInteger
 
@@ -17,7 +18,7 @@ from pure_pagination import Paginator,EmptyPage,PageNotAnInteger
 class AddWorkorder(View):
 
     def get(self,request):
-        service=Workorder.SERVICE_CHOICE
+        service=Service.objects.all()
         product=Product.objects.all()
         return render(request,'workorder/addworkorder.html',{'services':service,'products':product})
 
@@ -36,7 +37,8 @@ class AddWorkorder(View):
             operation_time = workorderdict.get('operation_time', None)
             update_reason = workorderdict.get('update_reason', None)
             try:
-                w=Workorder.objects.filter(service_name=service_name).filter(product=product).filter(order_status__lt=4)
+                service_obj=Service.objects.get(pk=service_name)
+                w=Workorder.objects.filter(service=service_obj).filter(product=product).filter(order_status__lt=4)
                 if w:
                     ret['status'] = 1
                     ret['errmsg'] = 'workorder has been existed!'
@@ -47,7 +49,7 @@ class AddWorkorder(View):
                     work.title = title
                     work.update_reason = update_reason
                     work.product = product
-                    work.service_name = service_name
+                    work.service= service_obj
                     work.order_contents = order_contents
                     work.operation_time = operation_time
                     work.save()
@@ -73,8 +75,7 @@ class WorkorderInfo(View):
                 # workorder_obj = serializers.serialize('json', Workorder.objects.filter(pk=wid))
                 workorder_json['title']=workorder_obj.title
                 workorder_json['product']=workorder_obj.product.name
-                workorder_json['service_name']=workorder_obj.get_service_name_display()
-                print workorder_obj.get_service_name_display()
+                workorder_json['service_name']=workorder_obj.service.short_name
                 workorder_json['order_contents']=workorder_obj.order_contents
                 workorder_json['update_reason']=workorder_obj.update_reason
                 workorder_json['reject_reason']=workorder_obj.reject_reason
