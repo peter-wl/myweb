@@ -267,6 +267,35 @@
             </div>
         </div>
     </div>
+    <div aria-hidden="true" aria-labelledby="myModalLabel" role="dialog" tabindex="-1" id="delmodal" class="modal fade">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
+                    <h4 class="modal-title">Delete Service</h4>
+                </div>
+                <div class="panel-body">
+                    <div class="form">
+                        <form class="cmxform form-horizontal tasi-form" id="d_form">
+                            <input type="hidden" name="d_service_id" id="d_service_id">
+                            <div class="form-group ">
+                                <label  class="control-label col-lg-2">Short Name</label>
+                                <div class="col-lg-10">
+                                    <input id="d_short_name" class="form-control" name="d_short_name" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <div class="col-lg-offset-2 col-lg-10">
+                                    <button class="btn btn-danger" type="button" id="d_submit">Submit</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 {% endblock %}
 {% block js %}
 {#    <script>#}
@@ -364,27 +393,26 @@
                 });
             })
 
-            $('.delete_user_message').click(function () {
-                var c_url=location.href;
+            $('.delete_service_message').click(function () {
                 var click_obj=$(this);
-                var username=click_obj.parents('td').siblings('.username').text();
-                var userid=click_obj.attr('data');
-                $('#d_username').attr('placeholder',username).attr('disabled',true);
-                $('#d_userid').attr('value',userid);
+                var short_name=click_obj.parents('td').siblings('.shortname').text();
+                var service_id=click_obj.attr('data');
+                $('#d_short_name').attr('placeholder',short_name).attr('disabled',true);
+                $('#d_service_id').attr('value',service_id);
                 $('#d_submit').click(function () {
-                    var userid=$('#d_userid').val();
-                    var str={'userid':userid};
+                    var service_id=$('#d_service_id').val();
+                    var str={'service_id':service_id};
                     console.log(str)
                     $.ajax({
-                        url:'{% url 'useroption' %}',
+                        url:'{% url 'serviceinfo' %}',
                         type:'DELETE',
                         data:str,
                         datatype:'json',
                         success:function (ret) {
                             if (ret.status==0){
-{#                                click_obj.parents('tr').remove();#}
+                                click_obj.parents('tr').remove();
                                 $('#delmodal').modal('hide');
-                                confirm(status=0,title='Delete Success',content='Delete user: '+ username);
+                                confirm(status=0,title='Delete Success',content='Delete Service: '+ short_name);
                             }
                             else {
                                 confirm(status=1,title='Delete Failed',content=ret.errmsg);

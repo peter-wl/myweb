@@ -9,6 +9,8 @@ from django.db.models import Q
 from user.models import UserProfile
 from service.forms import AddServiceForms,ModifyServiceForms
 from django.core import serializers
+import logging
+logger=logging.getLogger('myweb')
 # Create your views here.
 
 class ServiceInfo(View):
@@ -100,6 +102,24 @@ class ServiceInfo(View):
         else:
             ret['status'] = 2
             ret['errmsg'] = obj.errors.as_json()
+        return JsonResponse(ret, safe=True)
+
+    def delete(self,request):
+        ret = {}
+        ret['status'] = 0
+        if not request.user.has_perm('user.manager_permission'):
+            ret['status'] = 1
+            ret['errmsg'] = u'You not permission'
+            logger.error('user:{} not permission access useroption(delete)'.format(request.user))
+            return JsonResponse(ret, safe=True)
+        data = QueryDict(request.body)
+        userid = data.get('service_id', None)
+        try:
+            Service.objects.get(pk=userid).delete()
+        except Service.DoesNotExist as e:
+            logger.error('user:{} access {} error {}'.format(self.request.user, self.request.get_full_path()),e.args)
+            ret['status'] = 1
+            ret['errmsg'] = u"Service id does not exist!"
         return JsonResponse(ret, safe=True)
 
 

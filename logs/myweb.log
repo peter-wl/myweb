@@ -1,1 +1,2 @@
 2017-07-25 11:08:31,918 /Users/wangliang/PycharmProjects/myweb/asset/views.py 205 [DEBUG] user:admin access /asset/serverinfo
+2017-07-25 11:28:26,276 /Users/wangliang/PycharmProjects/myweb/user/views.py 309 [DEBUG] user:admin access /user/gourpinfo/

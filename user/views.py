@@ -2,7 +2,6 @@
 # -*- coding:utf-8 -*-
 
 # Create your views here.
-import logging
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import Group,Permission
@@ -16,6 +15,7 @@ from utils.mixin_utils import LoginRequiredMixin
 from user.forms import ModifyUserForms
 from pure_pagination import Paginator,EmptyPage,PageNotAnInteger
 from django.db.models import Q
+import logging
 logger=logging.getLogger('myweb')
 from user.models import UserProfile
 
