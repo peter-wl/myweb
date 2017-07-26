@@ -99,7 +99,7 @@ class UserInfo(ListView):
         if search_keywords:
             user_lists = UserProfile.objects.filter(Q(username=search_keywords) |
                                                        Q(email=search_keywords) |
-                                                       Q(phone=search_keywords))
+                                                      Q(phone=search_keywords))
         try:
             page = request.GET.get('page', 1)
         except PageNotAnInteger:

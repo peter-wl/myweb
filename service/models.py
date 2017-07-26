@@ -16,12 +16,17 @@ class Service(models.Model):
     short_name          = models.CharField(max_length=10,null=True,unique=True)
     dev_name            = models.ForeignKey(UserProfile,null=True)
     script              = models.IntegerField(choices=SCRIPT_CHOICE,null=True)
+    class Meta:
+        db_table='service'
 
-class ServiceModels(models.Model):
-    model_base_path     = models.CharField(max_length=30,null=True)
-    model_data_path     = models.CharField(max_length=30,null=True)
-    model_restart_script= models.CharField(max_length=30,null=True)
-    model_server_ip     = models.ForeignKey(Server,null=True)
-    model_service       = models.ForeignKey(Service,null=True)
+class Modules(models.Model):
+    module_name         = models.CharField(max_length=30,null=True)
+    base_dir            = models.CharField(max_length=30,null=True)
+    data_dir            = models.CharField(max_length=30,null=True)
+    computer_name       = models.CharField(max_length=30,null=True,default=None)
+    server              = models.ForeignKey(Server,null=True)
+    service             = models.ForeignKey(Service,null=True)
+    class Meta:
+        db_table='modules'
 
 

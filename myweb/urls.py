@@ -19,7 +19,6 @@ from index import views as index
 from user import views as user
 from asset import views as asset
 from service import views as service
-
 from workorder import views as workorder
 
 
@@ -53,6 +52,7 @@ urlpatterns = [
     ])),
     url(r'^service/',include([
         url(r'^serviceinfo',service.ServiceInfo.as_view(),name='serviceinfo'),
+        url(r'^moduleinfo',service.ModuleInfo.as_view(),name='moduleinfo'),
     ]))
 ]
 handler404='accounts.views.page_not_found'

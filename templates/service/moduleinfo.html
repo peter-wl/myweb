@@ -1,7 +1,7 @@
 {% extends 'public/base.html' %}
 
 {% block title %}
-    <title>J.A.P-ServiceInfo</title>
+    <title>J.A.P-ModuleInfo</title>
 {% endblock %}
 {% block css %}
         <style>
@@ -32,13 +32,13 @@
             <section class="panel">
                 <header class="panel-heading" style="position: relative;height: 55px;line-height: 38px" >
                     <span >QueryResult:&nbsp<em class="text-danger">{{ page_obj.paginator.count }}&nbsp</em>entries</span>
-                    <button id="add_service_button" class="btn btn-round btn-danger" style="position: absolute;right: 90px;top: 11px" >Add Service</button>
+                    <button id="add_module_button" class="btn btn-round btn-danger" style="position: absolute;right: 90px;top: 11px" >Add Module</button>
                 </header>
                 <header class="panel-heading" style="display: block;position: relative" >
-                    <form  class="form-horizontal tasi-form" action={% url 'serviceinfo' %} method="get">
+                    <form  class="form-horizontal tasi-form" action={% url 'moduleinfo' %} method="get">
                         <div class="form-group ">
                             <div class="col-lg-3">
-                                <input type="text" class="query form-control round-input" name="search_keywords" value="{{ search_keywords }}"  placeholder="Search ServiceName|ShortName">
+                                <input type="text" class="query form-control round-input" name="search_keywords" value="{{ search_keywords }}"  placeholder="Search ModuleName|Service|ip">
                             </div>
 {#                            <div class="col-lg-2">#}
 {#                                <input type="email" class="query form-control round-input" name="email" value="{{ email }}" placeholder="Enter Email">#}
@@ -56,28 +56,32 @@
                     <table class="table table-striped table-advance table-hover">
                         <thead>
                         <tr>
-                            <th><i class="icon-user"></i><em> </em>Service Name</th>
+                            <th><i class="icon-user"></i><em> </em>Module Name</th>
 {#                            <th><i class="icon-male"></i><em> </em>Cname</th>#}
-                            <th class="hidden-phone"><i class="icon-envelope"></i><em> </em>Short Name</th>
-                            <th class="hidden-phone"><i class="icon-mobile-phone"></i><em> </em>Developer</th>
-                            <th><i class="icon-cogs"></i><em> </em>Script</th>
+                            <th class="hidden-phone"><i class="icon-envelope"></i><em> </em>Ip</th>
+                            <th class="hidden-phone"><i class="icon-mobile-phone"></i><em> </em>Data Dir</th>
+                            <th class="hidden-phone"><i class="icon-mobile-phone"></i><em> </em>Base Dir</th>
+                            <th><i class="icon-cogs"></i><em> </em>Description</th>
+                            <th><i class="icon-cogs"></i><em> </em>Service</th>
                             <th><i class="icon-cogs"></i><em> </em>Operation</th>
                         </tr>
                         </thead>
                         <tbody>
                         {#                        当前页面所有数据的对象列表，page_obj.object_list#}
-                        {% for service in page_obj.object_list %}
+                        {% for module in page_obj.object_list %}
                         <tr>
-                            <td class="servicename">{{ service.service_name}}</td>
+                            <td class="servicename">{{ module.module_name }}</td>
 {#                                <td class="cname">{{ user.profile.cname}}</td>#}
-                            <td class="shortname">{{ service.short_name }}</td>
-                            <td class="dev_user">{{ service.dev_name.username }}</td>
-                            <td class="script">{{ service.get_script_display }}</td>
+                            <td class="shortname">{{ module.server.inner_ip }}</td>
+                            <td class="dev_user">{{ module.data_dir }}</td>
+                            <td class="script">{{ module.base_dir }}</td>
+                            <td class="script">{{ module.computer_name }}</td>
+                            <td class="script">{{ module.service.service_name }}</td>
                             <td>
-                                <a href="#modifymodal" data-toggle="modal" class="btn btn-primary btn-xs modify_service_message" data="{{ service.id }}">
+                                <a href="#modifymodal" data-toggle="modal" class="btn btn-primary btn-xs modify_module_message" data="{{ module.id }}">
                                     <i class="icon-pencil"></i>
                                 </a>
-                                <a href="#delmodal" data-toggle="modal" class="btn btn-danger btn-xs delete_service_message" data="{{ service.id }}"><i class="icon-trash "></i></a>
+                                <a href="#delmodal" data-toggle="modal" class="btn btn-danger btn-xs delete_module_message" data="{{ module.id }}"><i class="icon-trash "></i></a>
                             </td>
                         </tr>
                         {% endfor %}
@@ -87,7 +91,7 @@
                 <div class="panel-default" style="margin-top: -30px">
                     <center>
                         <ul class="pagination" >
-                            <li><a href="{% url 'serviceinfo' %}?page=1">Home</a></li>
+                            <li><a href="{% url 'moduleinfo' %}?page=1">Home</a></li>
                             {# 如果有前一页，前一页按钮可以点击，否则不可以点击 #}
                             {% if page_obj.has_previous %}
                                 <li class="paginate_button previous" aria-controls="editable" tabindex="0" id="editable_previous">
@@ -119,7 +123,7 @@
                                     <a class="page" href="#">Next</a>
                                 </li>
                             {% endif %}
-                            <li><a href="{% url 'serviceinfo' %}?page={{ page_obj.paginator.num_pages }}">End</a></li>
+                            <li><a href="{% url 'moduleinfo' %}?page={{ page_obj.paginator.num_pages }}">End</a></li>
                         </ul>
                     </center>
 {#                    <center>#}
@@ -159,48 +163,60 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                    <h4 class="modal-title">Add Service</h4>
+                    <h4 class="modal-title">Add Module</h4>
                 </div>
                 <div class="panel-body">
                     <div class="form">
                         <form class="cmxform form-horizontal tasi-form" id="add_form">
                             <div class="form-group ">
-                                <label  class="control-label col-lg-2">Service Name</label>
+                                <label  class="control-label col-lg-2">Module Name</label>
                                 <div class="col-lg-10">
-                                    <input class="form-control help-block" id="a_service_name" name="a_service_name" type="text"/>
+                                    <input class="form-control help-block" id="a_module_name" name="a_module_name" type="text"/>
                                 </div>
                             </div>
                             <div class="form-group ">
-                                <label class="control-label col-lg-2">Short Name</label>
+                                <label class="control-label col-lg-2">Base Dir</label>
                                 <div class="col-lg-10">
-                                    <input class="form-control help-block"  id="a_short_name" name="a_short_name" type="text"/>
+                                    <input class="form-control help-block"  id="a_base_dir" name="a_base_dir" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label class="control-label col-lg-2">Data Dir</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control help-block"  id="a_data_dir" name="a_data_dir" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label class="control-label col-lg-2">description</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control help-block"  id="a_computer_name" name="a_computer_name" type="text"/>
                                 </div>
                             </div>
                             <div class="form-group " >
-                                <label for="email" class="control-label col-lg-2">Developer</label>
-                                <div class="col-lg-10 " id="a_dev_name">
-                                    <select name="a_dev_name"  class="chosen" data-placeholder="please choice">
+                                <label for="email" class="control-label col-lg-2">Server IP</label>
+                                <div class="col-lg-10 " id="a_server_ip">
+                                    <select name="a_server_ip"  class="chosen" data-placeholder="please choice">
                                         <option></option>
-                                        {% for u in user %}
-                                            <option value={{ u.id }}>{{ u.username }}</option>
+                                        {% for s in server %}
+                                            <option value={{ s.id }}>{{ s.inner_ip }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group ">
-                                <label for="email" class="control-label col-lg-2">Script</label>
-                                <div class="col-lg-10 " id="a_script">
-                                    <select name="a_script"  class="chosen" data-placeholder="please choice">
+                                <label for="email" class="control-label col-lg-2">Service</label>
+                                <div class="col-lg-10 " id="a_service">
+                                    <select name="a_service"  class="chosen" data-placeholder="please choice">
                                         <option></option>
-                                        {% for s in script %}
-                                            <option value={{ s.0 }}>{{ s.1 }}</option>
+                                        {% for v in service %}
+                                            <option value={{ v.id }}>{{ v.service_name }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-offset-2 col-lg-10">
-                                    <button class="btn btn-danger" type="button" id="add_service_submit">Submit</button>
+                                    <button class="btn btn-danger" type="button" id="add_module_submit">Submit</button>
                                 </div>
                             </div>
                         </form>
@@ -214,50 +230,61 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button">×</button>
-                    <h4 class="modal-title">Modify Service</h4>
+                    <button aria-hidden="true" data-dismiss="modal" class="close" type="button"></button>
+                    <h4 class="modal-title"> Module</h4>
                 </div>
                 <div class="panel-body">
                     <div class="form">
                         <form class="cmxform form-horizontal tasi-form" id="modify_form">
                             <div class="form-group ">
-                                <input type="hidden" name="m_service_id" id="m_service_id">
-                                <label  class="control-label col-lg-2">Service Name</label>
+                                <label  class="control-label col-lg-2">Module Name</label>
                                 <div class="col-lg-10">
-                                    <input class="form-control help-block" id="m_service_name" name="m_service_name" type="text"/>
+                                    <input class="form-control help-block" id="m_module_name" name="m_module_name" type="text"/>
                                 </div>
                             </div>
                             <div class="form-group ">
-                                <label class="control-label col-lg-2">Short Name</label>
+                                <label class="control-label col-lg-2">Base Dir</label>
                                 <div class="col-lg-10">
-                                    <input class="form-control help-block"  id="m_short_name" name="m_short_name" type="text"/>
+                                    <input class="form-control help-block"  id="m_base_dir" name="m_base_dir" type="text"/>
                                 </div>
                             </div>
                             <div class="form-group ">
-                                <label for="email" class="control-label col-lg-2">Developer</label>
-                                <div class="col-lg-10 " id="m_dev_name">
-                                    <select name="m_dev_name"  class="chosen m_dev_name" data-placeholder="please choice">
+                                <label class="control-label col-lg-2">Data Dir</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control help-block"  id="m_data_dir" name="m_data_dir" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group ">
+                                <label class="control-label col-lg-2">description</label>
+                                <div class="col-lg-10">
+                                    <input class="form-control help-block"  id="m_computer_name" name="m_computer_name" type="text"/>
+                                </div>
+                            </div>
+                            <div class="form-group " >
+                                <label for="email" class="control-label col-lg-2">Server IP</label>
+                                <div class="col-lg-10 " id="m_server_ip">
+                                    <select name="m_server_ip"  class="chosen m_server_ip" data-placeholder="please choice">
                                         <option></option>
-                                        {% for u in user %}
-                                            <option value={{ u.id }}>{{ u.username }}</option>
+                                        {% for s in server %}
+                                            <option value={{ s.id }}>{{ s.inner_ip }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group ">
-                                <label for="email" class="control-label col-lg-2">Script</label>
-                                <div class="col-lg-10 " id="m_script">
-                                    <select name="m_script"  class="chosen m_script" data-placeholder="please choice">
+                                <label for="email" class="control-label col-lg-2">Service</label>
+                                <div class="col-lg-10 " id="m_service">
+                                    <select name="m_service"  class="chosen m_service" data-placeholder="please choice">
                                         <option></option>
-                                        {% for s in script %}
-                                            <option value={{ s.0 }}>{{ s.1 }}</option>
+                                        {% for v in service %}
+                                            <option value={{ v.id }}>{{ v.service_name }}</option>
                                         {% endfor %}
                                     </select>
                                 </div>
                             </div>
                             <div class="form-group">
                                 <div class="col-lg-offset-2 col-lg-10">
-                                    <button class="btn btn-danger" type="button" id="modify_service_submit">Submit</button>
+                                    <button class="btn btn-danger" type="button" id="modify_module_submit">Submit</button>
                                 </div>
                             </div>
                         </form>
@@ -292,7 +319,6 @@
                         </form>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -305,22 +331,22 @@
                 search_contains: true,{#模糊查询#}
                 width: "100%",
             });
-            $('#add_service_button').click(function(){
+            $('#add_module_button').click(function(){
                 $('.errmsg').remove();
                 $('#addmodal').modal('show');
-                $('#add_service_submit').click(function () {
+                $('#add_module_submit').click(function () {
                     var str = $('#add_form').serialize();
                     console.log(str);
-                    $.post('{% url 'serviceinfo' %}',
+                    $.post('{% url 'moduleinfo' %}',
                         str,
                         function (ret) {
                             console.log(ret);
                             if(ret.status==0) {
                                 $('#addmodal').modal('hide');
-                                confirm(status=0,title='Add service',content='Success');
+                                confirm(status=0,title='Add Module',content='Success');
                             }
                             else if (ret.status==1){
-                                confirm(status=1,title='Add service',content=ret.errmsg);
+                                confirm(status=1,title='Add Module',content=ret.errmsg);
                             }else{
                                 $('.errmsg').remove();
                                 $.each(JSON.parse(ret.errmsg),function (k,v) {
@@ -328,7 +354,7 @@
                                     tag.className='errmsg';
                                     tag.style='display:block;color:red;margin-top:10px';
                                     tag.innerText=v[0].message;
-                                    if (k=='a_dev_name' || k=='a_script'){
+                                    if (k=='a_service' || k=='a_server_ip'){
                                         $('#'+k).append(tag)
                                     }else{
                                         $('#'+k).after(tag)
@@ -340,21 +366,23 @@
                     )
                 });
             });
-            $('.modify_service_message').click(function () {
+            $('.modify_module_message').click(function () {
                 $('.errmsg').remove();
                 var click_obj=$(this);
                 var id=click_obj.attr('data');
-                str={'service_id':id};
+                str={'module_id':id};
                 $.get(
-                    '{% url 'serviceinfo' %}',
+                    '{% url 'moduleinfo' %}',
                     str,
                     function (ret) {
+                        console.log(ret)
                         if (ret.status == 0) {
-                            $('#m_service_name').attr('value', ret.service_name);
-                            $('#m_service_id').attr('value', id);
-                            $('#m_short_name').attr('value', ret.short_name);
-                            $('.m_dev_name').val(ret.dev_name).trigger('chosen:updated')
-                            $('.m_script').val(ret.script).trigger('chosen:updated')
+                            $('#m_module_name').attr('value', ret.module_name);
+                            $('#m_base_dir').attr('value',ret.base_dir);
+                            $('#m_data_dir').attr('value', ret.data_dir);
+                            $('#m_computer_name').attr('value', ret.computer_name);
+                            $('.m_server_ip').val(ret.server).trigger('chosen:updated')
+                            $('.m_service').val(ret.service).trigger('chosen:updated')
                         } else {
                             confirm(status = 1, title = 'Modify service', content = ret.errmsg);
                         }
@@ -386,11 +414,7 @@
                                 tag.className='errmsg';
                                 tag.style='display:block;color:red;margin-top:10px';
                                 tag.innerText=v[0].message;
-                                if (k=='m_dev_name' || k=='m_script'){
-                                    $('#'+k).append(tag)
-                                }else{
-                                    $('#'+k).after(tag)
-                                }
+                                $('#'+k).after(tag)
                             });
                         }
                     }

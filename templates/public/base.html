@@ -351,7 +351,7 @@
                     </a>
                     <ul class="sub">
                         <li {% if request.COOKIES.menu_click == 'menu_click_10' %} class="active" {% endif %}><a class="menu_link" data='menu_click_10' href={% url 'serviceinfo' %}>Service Info</a></li>
-                        <li {% if request.COOKIES.menu_click == 'menu_click_11' %} class="active" {% endif %}><a class="menu_link" data='menu_click_11' href="#">Service info</a></li>
+                        <li {% if request.COOKIES.menu_click == 'menu_click_11' %} class="active" {% endif %}><a class="menu_link" data='menu_click_11' href={% url 'moduleinfo' %}>Module info</a></li>
 {#                        <li {% if request.COOKIES.menu_click == 'menu_click_11' %} class="active" {% endif %}><a class="menu_link" data='menu_click_8' href={% url 'workorderhistory' %}></a></li>#}
                     </ul>
                 </li>
